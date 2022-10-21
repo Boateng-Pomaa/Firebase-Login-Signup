@@ -6,7 +6,7 @@ GET http://localhost:3000/allnewCollections HTTP/1.1
 ######
 //creating new selle
 POST http://localhost:3000/products HTTP/1.1
-Content-Type: application/json
+Content-Type: application/json,image/jpeg
 
 {
      "id": "0660A",
@@ -18,8 +18,8 @@ Content-Type: application/json
     "main_color": "silver",
     "sec_color": "yellow",
     "currency": "cedis",
-    "material": "steel"
-    //"dis_img": "g"
+    "material": "steel",
+    "dis_img": "prod-1.jpg"
     //"sec_imgs": [{}, {}, {}],
 
 }

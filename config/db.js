@@ -1,5 +1,5 @@
 import { json } from "express"
-import admin, { storage } from "firebase-admin"
+import admin  from "firebase-admin"
 import credentials from './nodecrude-firebase-adminsdk-n0oy9-983bcd641e.json' assert{type:"json"}
 
 

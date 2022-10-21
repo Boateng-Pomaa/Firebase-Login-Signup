@@ -1,10 +1,6 @@
 import db from '../config/db.js'
-import {getStorage} from "firebase-admin/storage"
-const bucket = process.env.BUCKET_URI
-import multer from "multer"
-import {ref, uploadString      , listAll,deleteObject} from  "firebase-admin/storage"
-const memoStorage = multer.memoryStorage();
-const upload = multer({ memoStorage });
+import {ref, getStorage,uploadString} from  "firebase/storage"
+
 
 
 
@@ -39,7 +35,7 @@ export async function registerProducts(req,res){
         sec_color:req.body.sec_color,
         currency:req.body.currency,
         material:req.body.material,
-        dis_img:req.body.dis_img,
+        dis_img:req.file.dis_img,
         //sec_imgs:req.body.sec_imgs[{}, {}, {}],
        }
 
@@ -59,16 +55,42 @@ export async function registerProducts(req,res){
 
 // uploading an Image
 
-export async function imageUpload(req,res){
-    try {
-        const file = req.file;
-  const imageRef = ref(storage, file.originalname);
-  const metatype = { contentType: file.mimetype, name: file.originalname };
-  await uploadBytes(imageRef, file.buffer, metatype)
-    .then((snapshot) => {
-      res.send("uploaded!");
-    })
-    } catch (error) {
+// export async function imageUpload(req,res){
+//     try {
+//         const file = req.file;
+//   const imageRef = ref(storage, file.originalname);
+//   const metatype = { contentType: file.mimetype, name: file.originalname };
+//   await uploadBytes(imageRef, file.buffer, metatype)
+//     .then((snapshot) => {
+//       res.send("uploaded!");
+//     })
+//     } catch (error) {
         
-    }
+//     }
+// }
+
+
+
+//// uploading
+
+export async function uploadFile(req,res){
+try {
+    const storage = getStorage()
+    const filename = req.file
+    const metadata = {contentType: filename.mimetype, name: filename.originalname }
+    /// getting reference to the file
+    const imageRef = ref(storage, filename.originalname)
+    // Uploads file to the bucket
+    await uploadString(imageRef,filename.buffer,metadata)
+        .then((snapshot) => {
+              res.status(200).send("File uploaded!")
+            })
+  console.log(`${filename} uploaded.`)
+} catch (error) {
+    res.status(404).send(error)
+    console.log(error)
 }
+  
+  }
+  
+  
