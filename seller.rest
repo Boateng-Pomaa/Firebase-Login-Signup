@@ -1,0 +1,25 @@
+@url = "http://localhost:3000/"
+
+//getting all
+GET http://localhost:3000/allnewCollections HTTP/1.1
+
+######
+//creating new selle
+POST http://localhost:3000/products HTTP/1.1
+Content-Type: application/json
+
+{
+     "id": "0660A",
+    "gender": "male",
+    "category": "necklace",
+    "price": "234",
+    "name_of_product": "Necklace Holmes",
+    "owner": "House Batibos",
+    "main_color": "silver",
+    "sec_color": "yellow",
+    "currency": "cedis",
+    "material": "steel"
+    //"dis_img": "g"
+    //"sec_imgs": [{}, {}, {}],
+
+}
