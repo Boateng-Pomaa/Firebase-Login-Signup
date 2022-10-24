@@ -1,45 +1,94 @@
-import db from '../config/db.js'
+import firebase from '../config/db.js'
 import {ref, getStorage,uploadString} from  "firebase/storage"
+import { Product } from '../models/product.js'
+import { serverTimestamp } from "firebase/firestore";
+const db = firebase.firestore()
+
+db.settings({
+    timestampsInSnapshots: true
+  })
 
 
 
-
-
-/// retrieving all products
-export default async function getProducts(req,res){
+//retrieving all products
+export  async function getProducts(req,res){
     try {
-        const productsRef = db.collection("products")
-        const response = await productsRef.get()
+        const productsRef =  db.collection("products")
+        const products = await productsRef.get()
         let responseArr = []
-        response.forEach(doc => {
-            responseArr.push(doc.data())
-        })
-        res.status(200).send(responseArr)
-    } catch (error) {
+
+
+        if (products.empty) {
+            res.status(200).json({ message: "No records found" })
+          } 
+        else {
+            let total = 0;
+            products.forEach((item) => {
+              const product = Product(
+                item.id,
+                item.data().gender,
+                item.data().category,
+                item.data().price,
+                item.data().name,
+                item.data().seller,
+                item.data().seller_number,
+                item.data().metals,
+                item.data().metal_purity,
+                item.data().product_weight,
+                item.data().product_unit,
+                item.data().metal_certification,
+                item.data().main_color,
+                item.data().sec_color,
+                item.data().currency,
+                item.data().createdAt,
+                item.data().updatedAt
+                //item.data().dis_img,
+                //item.data().sec_imgs
+                 )
+              responseArr.push(product);
+              total = total + 1;
+            });
+            res.status(200).json({
+              listing: responseArr,
+              count: total
+            });
+
+
+    } 
+}
+    catch (error) {
         res.status(404).send(error)
         console.log(error)
     } 
-    }
+}  
 
 
     //registerin new products
 export async function registerProducts(req,res){
     try {
         const id = req.body.id
-       const productDetails = {gender:req.body.gender,
-        category:req.body.category,
-        price:req.body.price,
-        name_of_product:req.body.name_of_product,
-        owner:req.body.owner,
-        main_color:req.body.main_color,
-        sec_color:req.body.sec_color,
-        currency:req.body.currency,
-        material:req.body.material,
-        dis_img:req.file.dis_img,
-        //sec_imgs:req.body.sec_imgs[{}, {}, {}],
+       const productDetails = {
+        gender: req.body.gender,
+      category: req.body.category,
+      price: req.body.price,
+      name: req.body.name,
+      seller: req.body.seller,
+      seller_number: req.body.seller_number,
+      metals: req.body.metals,
+      metal_purity: req.body.metal_purity,
+      product_weight: req.body.product_weight,
+      product_unit: req.body.product_unit,
+      metal_certification: req.body.metal_certification,
+      main_color: req.body.main_color,
+      sec_color: req.body.sec_color,
+      currency: req.body.currency,
+      createdAt:serverTimestamp(),
+      updatedAt:serverTimestamp()
+      //dis_img: req.body.dis_img,
+      //sec_imgs: req.body.sec_imgs
        }
 
-       const collectionDB = db.collection("products").doc(id).set({productDetails})
+       const collectionDB = db.collection("products").doc(id).set(productDetails)
       if(collectionDB){
         res.status(200).send(collectionDB)
         
@@ -69,14 +118,12 @@ export async function registerProducts(req,res){
 //     }
 // }
 
-
-
 //// uploading
 
 export async function uploadFile(req,res){
 try {
     const storage = getStorage()
-    const filename = req.file
+    const {filename} = req.files
     const metadata = {contentType: filename.mimetype, name: filename.originalname }
     /// getting reference to the file
     const imageRef = ref(storage, filename.originalname)

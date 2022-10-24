@@ -1,13 +1,17 @@
 import express from 'express'
 import cors from 'cors'
 import products from   './Router/productsRoute.js'
-import collections from './Router/collectionRoute.js'
+import bodyParser from 'body-parser'
+
 var app = express()
 
+
+
 app.use(express.json())
+app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(products)
-app.use(collections)
+
  app.use(cors())
  
 
