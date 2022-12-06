@@ -6,7 +6,7 @@ export class Product {
     sec_color,
     currency,
     createdAt,
-    updatedAt
+    //updatedAt
    // dis_img,
    // sec_imgs
 ) {
@@ -26,7 +26,7 @@ export class Product {
       this.sec_color = sec_color
       this.currency = currency
       this.createdAt = createdAt
-      this.updatedAt = updatedAt
+      //this.updatedAt = updatedAt
      // this.dis_img = dis_img
      // this.sec_imgs = sec_imgs
   }

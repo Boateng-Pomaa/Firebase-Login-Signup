@@ -1,7 +1,7 @@
 import firebase from '../config/db.js'
 import {ref, getStorage,uploadString} from  "firebase/storage"
 import { Product } from '../models/product.js'
-import { serverTimestamp } from "firebase/firestore";
+import { FieldValue,serverTimestamp } from "firebase/firestore"
 const db = firebase.firestore()
 
 db.settings({
@@ -24,7 +24,7 @@ export  async function getProducts(req,res){
         else {
             let total = 0;
             products.forEach((item) => {
-              const product = Product(
+              const product = new Product(
                 item.id,
                 item.data().gender,
                 item.data().category,
@@ -41,7 +41,7 @@ export  async function getProducts(req,res){
                 item.data().sec_color,
                 item.data().currency,
                 item.data().createdAt,
-                item.data().updatedAt
+                //item.data().updatedAt
                 //item.data().dis_img,
                 //item.data().sec_imgs
                  )
@@ -82,15 +82,17 @@ export async function registerProducts(req,res){
       main_color: req.body.main_color,
       sec_color: req.body.sec_color,
       currency: req.body.currency,
-      createdAt:serverTimestamp(),
-      updatedAt:serverTimestamp()
-      //dis_img: req.body.dis_img,
+      createdAt:new Date().toISOString(),
+      dis_img: uploadFile(),
       //sec_imgs: req.body.sec_imgs
        }
 
-       const collectionDB = db.collection("products").doc(id).set(productDetails)
+       const collectionDB = db.collection("products").doc(id).create(productDetails)
+
       if(collectionDB){
+        console.log(new Date().toISOString())
         res.status(200).send(collectionDB)
+        
         
       }
        
@@ -119,11 +121,10 @@ export async function registerProducts(req,res){
 // }
 
 //// uploading
-
-export async function uploadFile(req,res){
+ async function uploadFile(req,res){
 try {
     const storage = getStorage()
-    const {filename} = req.files
+    const {filename} = req.file.path
     const metadata = {contentType: filename.mimetype, name: filename.originalname }
     /// getting reference to the file
     const imageRef = ref(storage, filename.originalname)
